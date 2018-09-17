@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class Move:
+class Move(ABC):
     def __init__(self,name,power):
         self.name = name
         self.power = power
