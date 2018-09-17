@@ -1,4 +1,4 @@
-from Special_Move import Special_Move
+from Move import SpecialMove
 MAX_LEVEL = 100
 # MAX_STAT = 255
 # MIN_STAT = 0
@@ -73,8 +73,8 @@ class Pokemon:
         else:
             return False
 
-p1 = Pokemon("Rayquaza",1,1,1,1,1,1,1,Special_Move("Dragon Ascent",100,'n1'),Special_Move("2",200,'n2'),Special_Move("3",300,'n3'),Special_Move("4",400,'n4'))
-p2 = Pokemon("Suicune",1,1,1,1,1,1,1,Special_Move("1",100,'n1'),Special_Move("2",200,'n2'),Special_Move("3",300,'n3'),Special_Move("4",400,'n4'))
+p1 = Pokemon("Rayquaza",1,1,1,1,1,1,1,SpecialMove("Dragon Ascent",100),SpecialMove("2",200),SpecialMove("3",300),SpecialMove("4",400))
+p2 = Pokemon("Suicune",1,1,1,1,1,1,1,SpecialMove("1",100),SpecialMove("2",200),SpecialMove("3",300),SpecialMove("4",400))
 
 print(p1.use_move1(p2))
 
