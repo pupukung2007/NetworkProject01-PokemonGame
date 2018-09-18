@@ -25,11 +25,6 @@ class Pokemon:
         self.move2 = move2
         self.move3 = move3
         self.move4 = move4
-        self.is_poisoned = False
-        self.is_burned = False
-        self.is_frozen = False
-        self.is_paralyzed = False
-        self.is_asleep = False
 
     def gain_exp(self,exp):
         self.exp += exp
