@@ -48,6 +48,8 @@ class Pokemon:
         else:
             if not self.is_fainted():
                 return self.moves[move_slot].use(self,other)
+            else:
+                return "409 "+self.name+" is already knocked out. It can't use any move!"
 
 
     def set_hp(self, amount):
