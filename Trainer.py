@@ -14,10 +14,10 @@ class Trainer:
 
     def buy_item(self,item,total_price):
         if(self.money >= total_price):
-            self.money -= total_price;
+            self.money -= total_price
             duplicate_found = False
             duplicate_slot = 0
-            for i in range(self.items.len()):
+            for i in range(len(self.items)):
                 if item.name == self.items[i].name:
                     duplicate_found = True
                     duplicate_slot = i
@@ -26,29 +26,54 @@ class Trainer:
                 self.items[duplicate_slot].amount += 1
             else:
                 self.items.append(item)
+            return "208 You have bought "+str(item.amount)+" "+item.name+"(s) for "+str(total_price)
+        else:
+            return "404 Not enough money"
 
 
     def teach_move(self,move,replace_slot):
-        if(replace_slot == 1):
-            self.pokemon.move1 = move
-        elif (replace_slot == 2):
-            self.pokemon.move2 = move
-        elif (replace_slot == 3):
-            self.pokemon.move3 = move
-        elif (replace_slot == 4):
-            self.pokemon.move4 = move
-        else:
-            pass
+        message = "203 "+self.pokemon.name +" has forgotten "+self.pokemon.moves[replace_slot].name+" and learned "+ move.name
+        self.pokemon.moves[replace_slot] = move
+        return message
 
     def heal_pokemon(self):
         if(self.money >= 100):
             self.money -= 100
             self.pokemon.hp = self.pokemon.max_hp
-            self.pokemon.move1.pp = self.pokemon.move1.max_pp
-            self.pokemon.move2.pp = self.pokemon.move2.max_pp
-            self.pokemon.move3.pp = self.pokemon.move3.max_pp
-            self.pokemon.move4.pp = self.pokemon.move4.max_pp
+            for i in range(4):
+                self.pokemon.moves[i].pp = self.pokemon.moves[i].max_pp
+            return "202 Your pokemon has been fully healed"
+        else:
+            return "404 Not enough money"
 
+    def use_item(self,item):
+        found = False
+        found_slot = 0
+        for i in range(len(self.items)):
+            if item.name == self.items[i].name:
+                found = True
+                found_slot = i
+                break
+        if found and self.items[found_slot].amount > 0:
+            message = self.items[found_slot].use(self.pokemon)
+            self.items[found_slot].amount -= 1
+            return "201 "+self.name+" used "+self.items[found_slot].name+"\n"+ message
+        elif found and self.items[found_slot].amount ==0:
+            return "403 Not enough " + self.items[found_slot].name +"s"
+        else:
+            return "401 Item not found"
+
+    def receive_money(self,amount):
+        self.money += amount
+        return "207 "+self.name+" has received "+str(amount)+" Poke"
+
+    def lose_money(self,amount):
+        self.money -= amount
+        return "209 "+self.name+" has lost "+str(amount)+" Poke"
+
+    def is_out_of_pokemon(self):
+        if(self.pokemon.is_fainted()):
+            return "300 "+self.name + " is out of usable pokemon!"
 
 
 

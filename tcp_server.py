@@ -111,7 +111,7 @@ def run(connectionSocket, addr):
                     send_error(connectionSocket,
                                request['user'], 403, 'command is incomplete')
                 elif heroes[heroes[request['user']]['fightingWith']]['fightingWith'] != request['user']:
-                    send_error(connectionSocket, request['user'], 400, 'Unable to attakc this user')
+                    send_error(connectionSocket, request['user'], 400, 'Unable to attack this user')
                 else:
                     hero = heroes[request['user']]
                     if command[1] in hero['skills']:
