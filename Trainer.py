@@ -12,7 +12,8 @@ class Trainer:
         self.items = []
         self.is_online = True
 
-    def buy_item(self,item,total_price):
+    def buy_item(self,item,buy_amount,price):
+        total_price = buy_amount*price
         if(self.money >= total_price):
             self.money -= total_price
             duplicate_found = False
@@ -23,10 +24,11 @@ class Trainer:
                     duplicate_slot = i
                     break
             if duplicate_found:
-                self.items[duplicate_slot].amount += 1
+                self.items[duplicate_slot].amount_in_bag += buy_amount
             else:
-                self.items.append(item)
-            return "208 You have bought "+str(item.amount)+" "+item.name+"(s) for "+str(total_price)
+                self.items.append(Item(item.name,item.power))
+                self.items[len(self.items)-1].amount_in_bag = buy_amount
+            return "208 You have bought "+str(buy_amount)+" "+item.name+"(s) for "+str(total_price)+" Poke"
         else:
             return "404 Not enough money"
 
@@ -54,22 +56,22 @@ class Trainer:
                 found = True
                 found_slot = i
                 break
-        if found and self.items[found_slot].amount > 0:
+        if found and self.items[found_slot].amount_in_bag > 0:
             message = self.items[found_slot].use(self.pokemon)
-            self.items[found_slot].amount -= 1
+            self.items[found_slot].amount_in_bag -= 1
             return "201 "+self.name+" used "+self.items[found_slot].name+"\n"+ message
-        elif found and self.items[found_slot].amount ==0:
+        elif found and self.items[found_slot].amount_in_bag ==0:
             return "403 Not enough " + self.items[found_slot].name +"s"
         else:
             return "401 Item not found"
 
     def receive_money(self,amount):
         self.money += amount
-        return "207 "+self.name+" has received "+str(amount)+" Poke"
+        return "207 "+self.name+" has received "+str(amount_in_bag)+" Poke"
 
     def lose_money(self,amount):
         self.money -= amount
-        return "209 "+self.name+" has lost "+str(amount)+" Poke"
+        return "209 "+self.name+" has lost "+str(amount_in_bag)+" Poke"
 
     def is_out_of_pokemon(self):
         if(self.pokemon.is_fainted()):

@@ -63,9 +63,9 @@ class Pokemon:
         else:
             return False
 #Test
-p1 = Pokemon("Rayquaza",1,1,1,1,1,1,1,SpecialMove("Dragon Ascent",100,1),SpecialMove("2",200,1),SpecialMove("3",300,0),SpecialMove("4",400,0))
-p2 = Pokemon("Suicune",1,1,1,1,1,1,1,SpecialMove("1",100,0),SpecialMove("2",200,0),SpecialMove("3",300,0),SpecialMove("4",400,0))
-
-print(p1.use_move(1,p2))
-print(p1.use_move(2,p2))
+# p1 = Pokemon("Rayquaza",1,1,1,1,1,1,1,SpecialMove("Dragon Ascent",100,1),SpecialMove("2",200,1),SpecialMove("3",300,0),SpecialMove("4",400,0))
+# p2 = Pokemon("Suicune",1,1,1,1,1,1,1,SpecialMove("1",100,0),SpecialMove("2",200,0),SpecialMove("3",300,0),SpecialMove("4",400,0))
+#
+# print(p1.use_move(1,p2))
+# print(p1.use_move(2,p2))
 

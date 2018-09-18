@@ -1,14 +1,15 @@
 from abc import ABC
 class Item(ABC):
-    def __init__(self,amount,power):
+    def __init__(self,name,power):
         super().__init__()
-        self.amount = amount
+        self.name = name
+        self.amount_in_bag = 0
         self.power = power
 
 
 class HPHealItem(Item):
-    def __init__(self,amount,power):
-        super().__init__(amount,power)
+    def __init__(self,name,power):
+        super().__init__(name,power)
 
     def use(self,pokemon):
         if(pokemon.hp == pokemon.max_hp):
@@ -21,8 +22,8 @@ class HPHealItem(Item):
 
 
 class PPHealItem(Item):
-    def __init__(self, amount, power):
-        super().__init__(amount, power)
+    def __init__(self,name,power):
+        super().__init__(name,power)
 
     def use(self,pokemon,move_slot):
         if (pokemon.moves[move_slot].pp == pokemon.moves[move_slot].max_pp):
