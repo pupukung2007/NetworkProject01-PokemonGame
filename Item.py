@@ -4,7 +4,10 @@ class Item(ABC):
         super().__init__()
         self.amount = amount
 
+    @abstractmethod
     def use(self):
         pass
+
+
 
 
