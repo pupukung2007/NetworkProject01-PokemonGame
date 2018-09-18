@@ -1,4 +1,5 @@
 from Pokemon import *
+from Item import*
 
 
 class Trainer:
@@ -10,7 +11,7 @@ class Trainer:
         self.items = []
         self.is_online = True
 
-    def increase_item(self,item,amount):
+    def buy_item(self,item):
         duplicate_found = False
         duplicate_slot = 0
         for i in range(self.items.len()):
@@ -21,7 +22,10 @@ class Trainer:
         if duplicate_found:
             self.items[duplicate_slot].amount +=1
         else:
-            self.items.append(Item(item.name,amount))
+            self.items.append(item)
+    #def teach_move(self,move):
+
+
 
 
 

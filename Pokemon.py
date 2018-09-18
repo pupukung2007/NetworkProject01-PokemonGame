@@ -31,7 +31,8 @@ class Pokemon:
         self.is_paralyzed = False
         self.is_asleep = False
 
-    def level_up(self):
+    def gain_exp(self,exp):
+        self.exp += exp
         while self.exp >= self.required_exp and self.level < MAX_LEVEL:
             self.level += 1
             self.set_hp(self.hp+3)
@@ -72,9 +73,10 @@ class Pokemon:
             return True
         else:
             return False
-
-p1 = Pokemon("Rayquaza",1,1,1,1,1,1,1,SpecialMove("Dragon Ascent",100),SpecialMove("2",200),SpecialMove("3",300),SpecialMove("4",400))
-p2 = Pokemon("Suicune",1,1,1,1,1,1,1,SpecialMove("1",100),SpecialMove("2",200),SpecialMove("3",300),SpecialMove("4",400))
+#Test
+p1 = Pokemon("Rayquaza",1,1,1,1,1,1,1,SpecialMove("Dragon Ascent",100,1),SpecialMove("2",200,1),SpecialMove("3",300,0),SpecialMove("4",400,0))
+p2 = Pokemon("Suicune",1,1,1,1,1,1,1,SpecialMove("1",100,0),SpecialMove("2",200,0),SpecialMove("3",300,0),SpecialMove("4",400,0))
 
 print(p1.use_move1(p2))
+print(p1.use_move2(p2))
 
