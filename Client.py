@@ -6,7 +6,7 @@ serverPort = 12001
 selectHero = ""
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
-waiting = 0
+waiting = False
 while 1:
     command = input("Enter your command: ")
     if(command == exit):

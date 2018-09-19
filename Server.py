@@ -31,55 +31,9 @@ trainers.append(Trainer("Poon",
                         )
                 )
 
-heroes = {
-    'job': {
-        'status': {
-            'atk': 1.99,
-            'hp': 12,
-            'spd': 2,
-        },
-        'skills': {
-            "tackle": 1,
-            "headbutt": 1.25,
-        },
-        'connection': 0,
-        'fightingWith': '',
-        'waiting': 0,
-    },
-    'ker': {
-        'status': {
-            'atk': 3000,
-            'hp': 2,
-            'spd': 1,
-        },
-        'skills': {
-            'fire-blast': 20,
-            'hydro-pump': 30,
-            'tackle': 1
-        },
-        'connection': 0,
-        'fightingWith': '',
-        'waiting': 0,
-    },
-    'yo': {
-        'status': {
-            'atk': 900000,
-            'hp': 9000000,
-            'spd': 5000,
-        },
-        'skills': {
-            'tackle': 1,
-            'hyper-beam': 99999
-        },
-        'connection': 0,
-        'fightingWith': '',
-        'waiting': 0,
-    }
-}
-
 def run(connectionSocket, addr):
     try:
-        selected_trainer = Trainer("Not Selected",
+        selected_trainer = Trainer("None",
                                    Pokemon("None",0,0,0,0,0,0,0,
                                             SpecialMove("None",0,0),
                                             SpecialMove("None", 0, 0),
@@ -87,7 +41,7 @@ def run(connectionSocket, addr):
                                            SpecialMove("None", 0, 0)
                                            ),
                                    0)
-        while 1:
+        while True:
             request = connectionSocket.recv(2048).decode()
             command = request.split()
             print(command)
@@ -97,7 +51,7 @@ def run(connectionSocket, addr):
                     connectionSocket.send(response.encode())
                 else:
                     if command[1] == "as":
-                        if selected_trainer.name != "Not Selected":
+                        if selected_trainer.name != "None":
                             response = "403 You are already logged in as " + selected_trainer.name
                             connectionSocket.send(response.encode())
                         else:
@@ -111,6 +65,7 @@ def run(connectionSocket, addr):
                                         selected_trainer = trainers[i]
                                         user_found = True
                                         trainers[i].is_online = True
+                                        trainers[i].connectionSocket = connectionSocket
                                         response = "200 Welcome " + command[2] + "!"
                                         connectionSocket.send(response.encode())
                             if not user_found:
@@ -127,8 +82,8 @@ def run(connectionSocket, addr):
                     connectionSocket.send(response.encode())
                 else:
                     if(command[1] == "player"):
-                        if selected_trainer.name == "Not Selected":
-                            response = "403 Please select your trainer before using this command\n" + "(Select player by using command <continue as (trainer name)>)"
+                        if selected_trainer.name == "None":
+                            response = "428 Please select your trainer before using this command\n" + "(Select player by using command <continue as (trainer name)>)"
                             connectionSocket.send(response.encode())
                         else:
                             response = "200 \nCurrently Online Players: \n"
@@ -139,15 +94,52 @@ def run(connectionSocket, addr):
                     else:
                         response = "400 Unknown command"
                         connectionSocket.send(response.encode())
+            
+            elif command[0] == "challenge":
+                if selected_trainer.name == "None":
+                    response = "428 Please select your trainer before using this command\n" + "(Select player by using command <continue as (trainer name)>)"
+                    connectionSocket.send(response.encode())
+                else:
+                    if (len(command) != 2):
+                        connectionSocket.send("400 Unknown command".encode())
+                    else:
+                        if (command[1] == selected_trainer.name):
+                            connectionSocket.send("403 You can't challenge yourself")
+                        else:
+                            user_found = False
+                            for i in range(len(trainers)):
+                                if (command[1] == trainers[i].name):
+                                    user_found = True
+                                    if trainers[i].is_online:
+                                        response = "200 Challenging Trainer "+command[1]
+                                        connectionSocket.send(response.encode())
+                                        challenge_message = "300 You are challenged by Trainer "+selected_trainer.name
+                                        trainers[i].connectionSocket.send(challenge_message.encode())
+                                    else:
+                                        connectionSocket.send("403 This Trainer is currently offline".encode())
+                            if not user_found:
+                                connectionSocket.send("404 Trainer not found".encode())
 
 
-            #elif command[0] == "challenge" and
+                    
 
             else:
                 response = "400 Unknown command"
                 connectionSocket.send(response.encode())
     finally:
-        selected_trainer = "Not Selected"
+        for i in range(len(trainers)):
+            if selected_trainer.name == trainers[i].name:
+                trainers[i].is_online = False
+                trainers[i].connectionSocket = 0
+        selected_trainer = Trainer("None",
+                                   Pokemon("None", 0, 0, 0, 0, 0, 0, 0,
+                                           SpecialMove("None", 0, 0),
+                                           SpecialMove("None", 0, 0),
+                                           SpecialMove("None", 0, 0),
+                                           SpecialMove("None", 0, 0)
+                                           ),
+                                   0)
+
         connectionSocket.close()
 
 

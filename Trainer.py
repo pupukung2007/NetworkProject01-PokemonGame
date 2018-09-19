@@ -11,6 +11,7 @@ class Trainer:
         self.money  = money
         self.items = []
         self.is_online = False
+        self.connectionSocket = 0
 
     def buy_item(self,item,buy_amount,price):
         total_price = buy_amount*price
