@@ -10,7 +10,7 @@ class Trainer:
         self.pokemon = pokemon
         self.money  = money
         self.items = []
-        self.is_online = True
+        self.is_online = False
 
     def buy_item(self,item,buy_amount,price):
         total_price = buy_amount*price
@@ -67,15 +67,18 @@ class Trainer:
 
     def receive_money(self,amount):
         self.money += amount
-        return "207 "+self.name+" has received "+str(amount_in_bag)+" Poke"
+        return "207 "+self.name+" has received "+str(amount)+" Poke"
 
     def lose_money(self,amount):
         self.money -= amount
-        return "209 "+self.name+" has lost "+str(amount_in_bag)+" Poke"
+        return "209 "+self.name+" has lost "+str(amount)+" Poke"
 
     def is_out_of_pokemon(self):
         if(self.pokemon.is_fainted()):
             return "300 "+self.name + " is out of usable pokemon!"
+
+    def __eq__(self, other):
+        return self.name == other.name
 
 
 
