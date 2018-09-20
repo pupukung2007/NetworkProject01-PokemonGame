@@ -24,7 +24,7 @@ class Pokemon:
         self.moves = [move1,move2,move3,move4]
 
     def gain_exp(self,exp):
-        message = "206 "+self.name+" has gained "+str(exp)+" Exp."
+        message = "200 "+self.name+" has gained "+str(exp)+" Exp."
         pre_gained_level = self.level
         self.exp += exp
         while self.exp >= self.required_exp and self.level < MAX_LEVEL:
@@ -49,8 +49,15 @@ class Pokemon:
             if not self.is_fainted():
                 return self.moves[move_slot].use(self,other)
             else:
-                return "409 "+self.name+" is already knocked out. It can't use any move!"
-
+                return self.name+" is already knocked out. It can't use any move!"
+    def use_move_name(self,name,other):
+        found = False
+        for i in range(len(self.moves)):
+            if name == self.moves[i].name:
+                found = True
+                return self.moves[i].use(self,other)
+        if not found:
+            return "404 Move not found"
 
     def set_hp(self, amount):
         self.hp = amount

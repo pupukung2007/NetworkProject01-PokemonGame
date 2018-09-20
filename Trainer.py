@@ -12,6 +12,8 @@ class Trainer:
         self.items = []
         self.is_online = False
         self.connectionSocket = 0
+        self.is_waiting = False
+        self.enemy = NoTrainer("None")
 
     def buy_item(self,item,buy_amount,price):
         total_price = buy_amount*price
@@ -80,6 +82,16 @@ class Trainer:
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def is_in_battle(self):
+        if(self.enemy.name== "None"):
+            return False
+        return True
+
+
+class NoTrainer:
+    def __init__(self,name):
+        self.name = name
 
 
 

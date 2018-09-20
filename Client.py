@@ -15,6 +15,21 @@ while 1:
         clientSocket.sendto(command.encode(),(serverName,serverPort))
     response = clientSocket.recv(2048).decode()
     print(response)
+    response_list = response.split()
+    status_code = response_list[0]
+    if status_code == "202":
+        print("Waiting for another Trainer")
+        waiting = True
+    #elif status_code == "300":
+
+    while waiting:
+        response = clientSocket.recv(2048).decode()
+        print(response)
+        response_list = response.split()
+        status_code = response_list[0]
+        if status_code == "200":
+            waiting = False
+
     # # before hero selection
     # while not selectHero:
     #     hero = input('choose your hero :')
