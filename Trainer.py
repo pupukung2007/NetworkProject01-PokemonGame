@@ -15,7 +15,7 @@ class Trainer:
         self.is_waiting = False
         self.enemy = NoTrainer("None")
 
-    def buy_item(self,item,buy_amount,price):
+    def buy_HP_item(self,item,buy_amount,price):
         total_price = buy_amount*price
         if(self.money >= total_price):
             self.money -= total_price
@@ -29,7 +29,27 @@ class Trainer:
             if duplicate_found:
                 self.items[duplicate_slot].amount_in_bag += buy_amount
             else:
-                self.items.append(Item(item.name,item.power))
+                self.items.append(HPHealItem(item.name,item.power))
+                self.items[len(self.items)-1].amount_in_bag = buy_amount
+            return "200 You have bought "+str(buy_amount)+" "+item.name+"(s) for "+str(total_price)+" Poke"
+        else:
+            return "402 Not enough money"
+
+    def buy_PP_item(self,item,buy_amount,price):
+        total_price = buy_amount*price
+        if(self.money >= total_price):
+            self.money -= total_price
+            duplicate_found = False
+            duplicate_slot = 0
+            for i in range(len(self.items)):
+                if item.name == self.items[i].name:
+                    duplicate_found = True
+                    duplicate_slot = i
+                    break
+            if duplicate_found:
+                self.items[duplicate_slot].amount_in_bag += buy_amount
+            else:
+                self.items.append(PPHealItem(item.name,item.power))
                 self.items[len(self.items)-1].amount_in_bag = buy_amount
             return "200 You have bought "+str(buy_amount)+" "+item.name+"(s) for "+str(total_price)+" Poke"
         else:

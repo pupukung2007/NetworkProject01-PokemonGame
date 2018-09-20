@@ -5,10 +5,12 @@ class Item(ABC):
         self.name = name
         self.amount_in_bag = 0
         self.power = power
+    @abstractmethod
     def use(self, pokemon):
-        return ""
+        pass
+    @abstractmethod
     def display_description(self):
-        return ""
+        pass
 
 
 class HPHealItem(Item):
@@ -26,8 +28,8 @@ class HPHealItem(Item):
         return pokemon.name+"'s HP was restored by "+str(pokemon.hp-pre_restore)+" points"
 
     def display_description(self):
-        message = super().display_description()
-        return self.name + ": Heal your pokemon HP for "+str(self.power)+" points"+"\n"+" Amount in bag: "+str(self.amount_in_bag)
+        super().display_description()
+        return self.name + ": Heal your pokemon HP for "+str(self.power)+" points"+" Amount in bag: "+str(self.amount_in_bag)+"\n"
 
 
 class PPHealItem(Item):
@@ -51,7 +53,7 @@ class PPHealItem(Item):
         return pokemon.name + "'s Move PP was restored by " + str(self.power)+" points\n"
 
     def display_description(self):
-        message = super().display_description()
-        return message+self.name + ": Heal all your pokemon move's PP for "+str(self.power)+" points"+"\n"+" Amount in bag: "+str(self.amount_in_bag)
+        super().display_description()
+        return self.name + ": Heal all your pokemon move's PP for "+str(self.power)+" points"+" Amount in bag: "+str(self.amount_in_bag)+"\n"
 
 

@@ -30,10 +30,10 @@ trainers.append(Trainer("Poon",
                         3000
                         )
                 )
-trainers[0].buy_item(HPHealItem("Potion",20),5,0)
-trainers[1].buy_item(HPHealItem("Potion",20),5,0)
-trainers[0].buy_item(PPHealItem("Elixir",20),5,0)
-trainers[1].buy_item(PPHealItem("Elixir",20),5,0)
+trainers[0].buy_HP_item(HPHealItem("Potion",20),5,0)
+trainers[1].buy_HP_item(HPHealItem("Potion",20),5,0)
+trainers[0].buy_PP_item(PPHealItem("Elixir",20),5,0)
+trainers[1].buy_PP_item(PPHealItem("Elixir",20),5,0)
 
 
 def run(connectionSocket, addr):
