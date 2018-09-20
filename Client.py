@@ -7,28 +7,67 @@ selectHero = ""
 clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 waiting = False
+in_battle = False
 while 1:
-    command = input("Enter your command: ")
-    if(command == exit):
-        break
-    else:
-        clientSocket.sendto(command.encode(),(serverName,serverPort))
-    response = clientSocket.recv(2048).decode()
-    print(response)
-    response_list = response.split()
-    status_code = response_list[0]
-    if status_code == "202":
-        print("Waiting for another Trainer")
-        waiting = True
-    #elif status_code == "300":
-
-    while waiting:
+    while not in_battle:
+        command = input("Enter your command: ")
+        if command == "":
+            command = "refresh"
+        clientSocket.sendto(command.encode(), (serverName, serverPort))
         response = clientSocket.recv(2048).decode()
         print(response)
         response_list = response.split()
         status_code = response_list[0]
-        if status_code == "200":
-            waiting = False
+        if status_code == "300" or status_code == "301":
+            in_battle = True
+            break
+    if(status_code == "301"):
+        while True:
+            response = clientSocket.recv(2048).decode()
+            response_list = response.split()
+            status_code = response_list[0]
+            if status_code == "200" or status_code == "202":
+                break
+    if waiting:
+        response = clientSocket.recv(2048).decode()
+        print(response)
+        response_list = response.split()
+        status_code = response_list[0]
+        #if status_code == "200":
+        waiting = False
+    command = input("Enter your battle command: ")
+    clientSocket.sendto(command.encode(), (serverName, serverPort))
+
+    if command == "exit":
+        break
+
+    response = clientSocket.recv(2048).decode()
+    response_list = response.split()
+    status_code = response_list[0]
+    if status_code == "202": #Other player Turn
+        print(response)
+        print("Waiting for another Trainer")
+        waiting = True
+    elif status_code == "200":  # Other player Turn
+        print(response)
+        waiting = False
+    elif status_code == "306":
+        print(response)
+        print("The battle has ended.")
+        in_battle = False
+
+    else:
+        print(response)
+    # if status_code == "301":
+    #     print("Waiting for another Trainer")
+    #     response = clientSocket.recv(2048).decode()
+    #     print(response)
+
+
+
+    #elif status_code == "300":
+
+
 
     # # before hero selection
     # while not selectHero:

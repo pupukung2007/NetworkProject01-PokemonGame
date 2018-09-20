@@ -41,14 +41,6 @@ def run(connectionSocket, addr):
                                            SpecialMove("None", 0, 0)
                                            ),
                                    0)
-        enemy_trainer = Trainer("None",
-                                   Pokemon("None",0,0,0,0,0,0,0,
-                                            SpecialMove("None",0,0),
-                                            SpecialMove("None", 0, 0),
-                                           SpecialMove("None", 0, 0),
-                                           SpecialMove("None", 0, 0)
-                                           ),
-                                   0)
         while True:
             request = connectionSocket.recv(2048).decode()
             command = request.split()
@@ -126,14 +118,17 @@ def run(connectionSocket, addr):
                                     user_found = True
                                     if trainers[i].is_online:
                                         if not trainers[i].is_in_battle():
-                                            response = "300 You challenged Trainer "+command[1]+" to a battle"+"\n"
-                                            connectionSocket.send(response.encode())
+                                            selected_trainer.enemy = trainers[i]
+                                            # for j in range(len(trainers)):
+                                            #     if selected_trainer.name == trainers[j].name:
+                                            #         trainers[j].enemy = trainers[i]
                                             trainers[i].enemy = selected_trainer
-                                            challenge_message = "300 You are challenged by Trainer "+selected_trainer.name+"\n"
+                                            response = "300 You challenged Trainer " + command[
+                                                    1] + " to a Pokemon battle" + "\n"+display_battle_info(selected_trainer,selected_trainer.enemy)
+                                            connectionSocket.send(response.encode())
+
+                                            challenge_message = "301 You are challenged by Trainer " + selected_trainer.name + "\n"+display_battle_info(selected_trainer.enemy,selected_trainer)
                                             trainers[i].connectionSocket.send(challenge_message.encode())
-                                            for j in range(len(trainers)):
-                                                if selected_trainer.name == trainers[j].name:
-                                                    trainers[j].enemy = trainers[i]
 
                                         else:
                                             connectionSocket.send("403 This Trainer is currently in battle with another trainer".encode())
@@ -148,18 +143,25 @@ def run(connectionSocket, addr):
                     connectionSocket.send(response.encode())
                 elif selected_trainer.enemy.name == "None":
                     connectionSocket.send("403 You have to challenge another player before using this command".encode())
+                elif len(command)<3:
+                    response = "400 Unknown command"
+                    connectionSocket.send(response.encode())
                 else:
                     if command[1] == "move":
                         if command[2].isalpha(): #Use move (movename)
                             move_name = ""
                             for i in range (2,len(command)):
-                                move_name += command[i]
+                                move_name += command[i]+" "
+                            move_name = move_name.strip()
                             response = selected_trainer.pokemon.use_move_name(move_name,selected_trainer.enemy.pokemon)
                             if "403" in response or "404" in response:
                                 connectionSocket.send(response.encode())
+                            if "306" in response:
+                                connectionSocket.send(response.encode())
+                                selected_trainer.enemy.connectionSocket.send(response.encode())
                             else:
-                                connectionSocket.send(("202 "+response+"\n").encode())
-                                selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n").encode())
+                                connectionSocket.send(("202 "+response+"\n"+display_battle_info(selected_trainer,selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
                     #     elif command[2].isnumeric(): #Use move (moveslot)
                     #
                     #     else:
@@ -174,7 +176,8 @@ def run(connectionSocket, addr):
 
 
                     
-
+            # elif command[0] == "refresh":
+            #     connectionSocket.send("900".encode())
             else:
                 response = "400 Unknown command"
                 connectionSocket.send(response.encode())
@@ -202,6 +205,13 @@ def run(connectionSocket, addr):
                                    0)
 
         connectionSocket.close()
+
+def display_battle_info(trainer,enemy):
+    info = trainer.pokemon.name+" HP: "+str(trainer.pokemon.hp)+"/"+str(trainer.pokemon.max_hp)+"\n"+enemy.pokemon.name + " HP: " + str(enemy.pokemon.hp) + "/" + str(enemy.pokemon.max_hp)+"\n"
+    for i in range(len(trainer.pokemon.moves)):
+        info += "Move "+str(i+1)+": "+trainer.pokemon.moves[i].name+"\n"
+    return info
+
 
 
 
