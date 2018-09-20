@@ -30,6 +30,11 @@ trainers.append(Trainer("Poon",
                         3000
                         )
                 )
+trainers[0].buy_item(HPHealItem("Potion",20),5,0)
+trainers[1].buy_item(HPHealItem("Potion",20),5,0)
+trainers[0].buy_item(PPHealItem("Elixir",20),5,0)
+trainers[1].buy_item(PPHealItem("Elixir",20),5,0)
+
 
 def run(connectionSocket, addr):
     try:
@@ -155,7 +160,7 @@ def run(connectionSocket, addr):
                                 move_name += command[i]+" "
                             move_name = move_name.strip()
                             response = selected_trainer.pokemon.use_move_name(move_name,selected_trainer.enemy.pokemon)
-                            if "403" in response or "404" in response:
+                            if "403" in response or "404" in response or "400" in response:
                                 connectionSocket.send(response.encode())
                             elif "306" in response: #Battle Ends
                                 #Decide Winner and give rewards
@@ -185,7 +190,7 @@ def run(connectionSocket, addr):
                                 selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
                         elif command[2].isnumeric(): #Use move (moveslot):
                             response = selected_trainer.pokemon.use_move(int(command[2]), selected_trainer.enemy.pokemon)
-                            if "403" in response or "404" in response:
+                            if "403" in response or "404" in response or "400" in response :
                                 connectionSocket.send(response.encode())
                             elif "306" in response:  # Battle Ends
                                 # Decide Winner and give rewards
@@ -215,13 +220,34 @@ def run(connectionSocket, addr):
                                                                                                       selected_trainer.enemy)).encode())
                                 selected_trainer.enemy.connectionSocket.send(("200 " + response + "\n" + display_battle_info( selected_trainer.enemy,selected_trainer)).encode())
 
-
-                    #
-                    #     else:
-                    #
-                    #
-                    # elif command[1] == "item":
-                    #
+                    #Use item
+                    elif command[1] == "item":
+                        if command[2].isalpha():  # Use item (itemname)
+                            item_name = ""
+                            for i in range(2, len(command)):
+                                item_name += command[i] + " "
+                            item_name = item_name.strip()
+                            response = selected_trainer.use_item_name(item_name)
+                            if "403" in response or "404" in response or "400" in response:
+                                connectionSocket.send(response.encode())
+                            else:
+                                connectionSocket.send(("202 " + response + "\n" + display_battle_info(selected_trainer,
+                                                                                                      selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send((
+                                                                                         "200 " + response + "\n" + display_battle_info(
+                                                                                     selected_trainer.enemy,
+                                                                                     selected_trainer)).encode())
+                        elif command[2].isnumeric():  # Use item (itemslot):
+                            response = selected_trainer.use_item(int(command[2]))
+                            if "403" in response or "404" in response or "400" in response:
+                                connectionSocket.send(response.encode())
+                            else:
+                                connectionSocket.send(("202 " + response + "\n" + display_battle_info(selected_trainer,
+                                                                                                      selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send((
+                                                                                         "200 " + response + "\n" + display_battle_info(
+                                                                                     selected_trainer.enemy,
+                                                                                     selected_trainer)).encode())
                     else:
                          connectionSocket.send("400 Unknown command".encode())
             elif command[0] == "Refresh":

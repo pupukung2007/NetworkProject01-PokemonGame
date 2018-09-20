@@ -5,6 +5,8 @@ class Item(ABC):
         self.name = name
         self.amount_in_bag = 0
         self.power = power
+    def use(self, pokemon):
+        return ""
 
 
 class HPHealItem(Item):
@@ -12,26 +14,39 @@ class HPHealItem(Item):
         super().__init__(name,power)
 
     def use(self,pokemon):
+        super().use(pokemon)
         if(pokemon.hp == pokemon.max_hp):
             return "403 HP is already full"
         pre_restore = pokemon.hp
         pokemon.hp += self.power
         if(pokemon.hp > pokemon.max_hp):
             pokemon.hp = pokemon.max_hp
-        return pokemon.name+"'s HP was increased by "+str(pokemon.hp-pre_restore)+" points"
+        return pokemon.name+"'s HP was restored by "+str(pokemon.hp-pre_restore)+" points"
+
+    def display_description(self):
+        return self.name + ": Heal your pokemon HP for "+str(self.power)+" points"+"\n"
 
 
 class PPHealItem(Item):
     def __init__(self,name,power):
         super().__init__(name,power)
 
-    def use(self,pokemon,move_slot):
-        if (pokemon.moves[move_slot].pp == pokemon.moves[move_slot].max_pp):
+    def use(self,pokemon):
+        super().use(pokemon)
+        found = False
+        for i in range(len(pokemon.moves)):
+            if (pokemon.moves[i].pp != pokemon.moves[i].max_pp):
+                found = True
+                break
+        if found:
+            for i in range(len(pokemon.moves)):
+                pokemon.moves[i].pp += self.power
+                if pokemon.moves[i].pp > pokemon.moves[i].max_pp:
+                    pokemon.moves[i].pp = pokemon.moves[i].max_pp
+        else:
             return "403 PP is already full"
-        pre_restore = pokemon.moves[move_slot].pp
-        pokemon.moves[move_slot].pp += self.power
-        if pokemon.moves[move_slot].pp > pokemon.moves[move_slot].max_pp:
-            pokemon.moves[move_slot].pp = pokemon.moves[move_slot].max_pp
-        return pokemon.moves[move_slot].name + "'s PP was increased by " + str(pokemon.moves[move_slot].pp-pre_restore)+" points"
+        return pokemon.name + "'s Move PP was restored by " + str(self.power)+" points\n"
 
+    def display_description(self):
+        return self.name + ": Heal all your pokemon move's PP for "+str(self.power)+" points"+"\n"
 

@@ -31,9 +31,9 @@ class Trainer:
             else:
                 self.items.append(Item(item.name,item.power))
                 self.items[len(self.items)-1].amount_in_bag = buy_amount
-            return "208 You have bought "+str(buy_amount)+" "+item.name+"(s) for "+str(total_price)+" Poke"
+            return "200 You have bought "+str(buy_amount)+" "+item.name+"(s) for "+str(total_price)+" Poke"
         else:
-            return "404 Not enough money"
+            return "402 Not enough money"
 
 
     def teach_move(self,move,replace_slot):
@@ -47,7 +47,7 @@ class Trainer:
             self.pokemon.moves[i].pp = self.pokemon.moves[i].max_pp
 
 
-    def use_item(self,item):
+    def use_item_name(self,item):
         found = False
         found_slot = 0
         for i in range(len(self.items)):
@@ -58,11 +58,25 @@ class Trainer:
         if found and self.items[found_slot].amount_in_bag > 0:
             message = self.items[found_slot].use(self.pokemon)
             self.items[found_slot].amount_in_bag -= 1
-            return "201 "+self.name+" used "+self.items[found_slot].name+"\n"+ message
+            return self.name+" used "+self.items[found_slot].name+"\n"+ message
         elif found and self.items[found_slot].amount_in_bag ==0:
             return "403 Not enough " + self.items[found_slot].name +"s"
         else:
-            return "401 Item not found"
+            return "404 Item not found"
+
+    def use_item(self,slot):
+        slot -= 1
+        if 0<=slot<len(self.items):
+            if self.items[slot].amount_in_bag >0:
+                message = self.items[slot].use(self.pokemon)
+                self.items[slot].amount_in_bag -= 1
+                return self.name + " used " + self.items[slot].name + "\n" + message
+            elif self.items[slot].amount_in_bag == 0:
+                return "403 Not enough " + self.items[slot].name + "s"
+            else:
+                return "404 Item not found"
+        else:
+            return "400 There is no item "+str(slot)
 
     def receive_money(self,amount):
         self.money += amount
