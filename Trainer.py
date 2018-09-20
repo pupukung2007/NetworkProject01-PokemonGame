@@ -77,8 +77,11 @@ class Trainer:
                 break
         if found and self.items[found_slot].amount_in_bag > 0:
             message = self.items[found_slot].use(self.pokemon)
-            self.items[found_slot].amount_in_bag -= 1
-            return self.name+" used "+self.items[found_slot].name+"\n"+ message
+            if "403" in message: #A stat is already Full
+                return message
+            else:
+                self.items[found_slot].amount_in_bag -= 1
+                return self.name+" used "+self.items[found_slot].name+"\n"+ message
         elif found and self.items[found_slot].amount_in_bag ==0:
             return "403 Not enough " + self.items[found_slot].name +"s"
         else:
