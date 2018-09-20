@@ -241,7 +241,9 @@ def run(connectionSocket, addr):
                     else:
                          connectionSocket.send("400 Unknown command".encode())
             elif command[0] == "Refresh":
-                 connectionSocket.send("900 ".encode())
+                connectionSocket.send("900 ".encode())
+            elif command[0] == "exit":
+                connectionSocket.send("600 ".encode())
             else:
                 response = "400 Unknown command"
                 connectionSocket.send(response.encode())

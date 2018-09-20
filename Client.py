@@ -14,13 +14,13 @@ while 1:
         command = input("Enter your command: ")
         if command == '':
             command = "Refresh"
-        if command == "exit":
-            exited = True
-            break
         clientSocket.sendto(command.encode(), (serverName, serverPort))
         response = clientSocket.recv(2048).decode()
         response_list = response.split()
         status_code = response_list[0]
+        if status_code == "600":
+            exited = True
+            break
         if status_code =="900":
             print()
         elif status_code == "300" :
