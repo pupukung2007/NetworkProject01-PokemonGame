@@ -276,6 +276,8 @@ def display_battle_info(trainer,enemy):
     info = trainer.pokemon.name+" HP: "+str(trainer.pokemon.hp)+"/"+str(trainer.pokemon.max_hp)+"\n"+enemy.pokemon.name + " HP: " + str(enemy.pokemon.hp) + "/" + str(enemy.pokemon.max_hp)+"\n"
     for i in range(len(trainer.pokemon.moves)):
         info += "Move"+str(i+1)+": "+trainer.pokemon.moves[i].name+"       PP: "+str(trainer.pokemon.moves[i].pp)+"\n"
+    for i in range(len(trainer.items)):
+        info += trainer.items[i].display_description()
     return info
 
 while 1:

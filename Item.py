@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC,abstractmethod
 class Item(ABC):
     def __init__(self,name,power):
         super().__init__()
@@ -6,6 +6,8 @@ class Item(ABC):
         self.amount_in_bag = 0
         self.power = power
     def use(self, pokemon):
+        return ""
+    def display_description(self):
         return ""
 
 
@@ -24,7 +26,8 @@ class HPHealItem(Item):
         return pokemon.name+"'s HP was restored by "+str(pokemon.hp-pre_restore)+" points"
 
     def display_description(self):
-        return self.name + ": Heal your pokemon HP for "+str(self.power)+" points"+"\n"
+        message = super().display_description()
+        return self.name + ": Heal your pokemon HP for "+str(self.power)+" points"+"\n"+" Amount in bag: "+str(self.amount_in_bag)
 
 
 class PPHealItem(Item):
@@ -48,5 +51,7 @@ class PPHealItem(Item):
         return pokemon.name + "'s Move PP was restored by " + str(self.power)+" points\n"
 
     def display_description(self):
-        return self.name + ": Heal all your pokemon move's PP for "+str(self.power)+" points"+"\n"
+        message = super().display_description()
+        return message+self.name + ": Heal all your pokemon move's PP for "+str(self.power)+" points"+"\n"+" Amount in bag: "+str(self.amount_in_bag)
+
 

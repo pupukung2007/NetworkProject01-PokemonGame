@@ -51,7 +51,7 @@ class Trainer:
         found = False
         found_slot = 0
         for i in range(len(self.items)):
-            if item.name == self.items[i].name:
+            if item == self.items[i].name:
                 found = True
                 found_slot = i
                 break
