@@ -28,6 +28,9 @@ while 1:
             in_battle = True
             waiting = True
             break
+        elif int(status_code) >= 400 and int(status_code) < 500:
+            print(response)
+            print("Please re enter your command")
         else:
             print(response)
     if waiting:
@@ -66,6 +69,9 @@ while 1:
         print(response)
         print("The battle has ended.")
         in_battle = False
+    elif int(status_code) >= 400 and int(status_code) < 500:
+        print(response)
+        print("Please re enter your command")
     elif status_code == "900":
         print()
     else:

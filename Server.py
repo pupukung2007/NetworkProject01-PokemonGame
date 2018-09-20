@@ -69,7 +69,7 @@ def run(connectionSocket, addr):
                                         user_found = True
                                         trainers[i].is_online = True
                                         trainers[i].connectionSocket = connectionSocket
-                                        response = "200 Welcome " + command[2] + "!"
+                                        response = "200 Welcome back " + command[2] + "!" +"\nPokemon: "+trainers[i].pokemon.name+" Lvl: "+str(trainers[i].pokemon.level)+"\nMoney: "+str(trainers[i].money)
                                         connectionSocket.send(response.encode())
                             if not user_found:
                                 response = "404 Trainer not found"
@@ -183,7 +183,39 @@ def run(connectionSocket, addr):
                             else:
                                 connectionSocket.send(("202 "+response+"\n"+display_battle_info(selected_trainer,selected_trainer.enemy)).encode())
                                 selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
-                    #     elif command[2].isnumeric(): #Use move (moveslot)
+                        elif command[2].isnumeric(): #Use move (moveslot):
+                            response = selected_trainer.pokemon.use_move(int(command[2]), selected_trainer.enemy.pokemon)
+                            if "403" in response or "404" in response:
+                                connectionSocket.send(response.encode())
+                            elif "306" in response:  # Battle Ends
+                                # Decide Winner and give rewards
+                                if selected_trainer.pokemon.hp == 0:
+                                    response += selected_trainer.enemy.name + " has won the battle and recieve 1000 poke"
+                                    selected_trainer.enemy.money += 1000
+                                else:
+                                    response += selected_trainer.name + " has won the battle and recieve 1000 poke"
+                                    selected_trainer.money += 1000
+                                connectionSocket.send(response.encode())
+                                selected_trainer.enemy.connectionSocket.send(response.encode())
+                                # Restore HP,PP and Enemy Status to default
+                                selected_trainer.heal_pokemon()
+                                selected_trainer.enemy.heal_pokemon()
+                                selected_trainer.enemy.enemy = NoTrainer("None")
+                                selected_trainer.enemy = NoTrainer("None")
+                                # Update Trainers
+                                for i in range(len(trainers)):
+                                    if trainers[i].name == selected_trainer.name:
+                                        trainers[i] = selected_trainer
+                                    elif trainers[i].name == selected_trainer.enemy.name:
+                                        trainers[i] = selected_trainer.enemy
+                                    else:
+                                        continue
+                            else:
+                                connectionSocket.send(("202 " + response + "\n" + display_battle_info(selected_trainer,
+                                                                                                      selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send(("200 " + response + "\n" + display_battle_info( selected_trainer.enemy,selected_trainer)).encode())
+
+
                     #
                     #     else:
                     #
@@ -217,165 +249,12 @@ def run(connectionSocket, addr):
 def display_battle_info(trainer,enemy):
     info = trainer.pokemon.name+" HP: "+str(trainer.pokemon.hp)+"/"+str(trainer.pokemon.max_hp)+"\n"+enemy.pokemon.name + " HP: " + str(enemy.pokemon.hp) + "/" + str(enemy.pokemon.max_hp)+"\n"
     for i in range(len(trainer.pokemon.moves)):
-        info += "Move "+str(i+1)+": "+trainer.pokemon.moves[i].name+"\n"
+        info += "Move"+str(i+1)+": "+trainer.pokemon.moves[i].name+"       PP: "+str(trainer.pokemon.moves[i].pp)+"\n"
     return info
-
-
-
-
-
-    #         if command[0] == 'select-hero':
-    #             if (command[1] in heroes and not heroes[command[1]]['connection']):
-    #                 heroes[command[1]]['connection'] = connectionSocket
-    #                 connectionSocket.send(pickle.dumps({
-    #                     'user': command[1],
-    #                     'status code': 200,
-    #                     'data': heroes[command[1]]['status']
-    #                 }))
-    #             elif command[1] in heroes and heroes[command[1]]['connection']:
-    #                 connectionSocket.send(pickle.dumps({
-    #                     'user': '',
-    #                     'status code': 403,
-    #                     'error': 'This user is unavailable'
-    #                 }))
-    #             else:
-    #                 connectionSocket.send(pickle.dumps({
-    #                     'user': '',
-    #                     'status code': 404,
-    #                     'error': 'User is not found'
-    #                 }))
-    #         elif command[0] == 'find':
-    #             if len(command) != 2:
-    #                 send_error(connectionSocket,
-    #                            request['user'], 400, 'command is incomplete')
-    #             elif (command[1] == 'enemy'):
-    #                 enemies = [key for key, val in heroes.items(
-    #                 ) if key != request['user'] and val['connection']]
-    #                 if len(enemies):
-    #                     connectionSocket.send(pickle.dumps({
-    #                         'user': request['user'],
-    #                         'status code': 200,
-    #                         'enemy': enemies
-    #                     }))
-    #                 else:
-    #                     connectionSocket.send(pickle.dumps({
-    #                         'user': request['user'],
-    #                         'status code': 204,
-    #                         'enemy': enemies,
-    #                     }))
-    #             else:
-    #                 send_error(connectionSocket,
-    #                            request['user'], 403, 'Unknown command')
-    #         elif command[0] == 'ask':
-    #             if len(command) != 3:
-    #                 send_error(connectionSocket,
-    #                            request['user'], 400, 'command is incomplete')
-    #             elif len(command) and command[2] == 'fight':
-    #                 if command[1] in heroes.keys():
-    #                     if heroes[command[1]]['connection']:
-    #                         if command[1] == request['user']:
-    #                             send_error(
-    #                                 connectionSocket, request['user'], 403, 'Target cannot be yourself')
-    #                         else:
-    #                             connectionSocket.send(pickle.dumps({
-    #                                 'user': request['user'],
-    #                                 'status code': 200,
-    #                                 'answer': 'wait',
-    #                                 'target': command[1]
-    #                             }))
-    #                             heroes[request['user']
-    #                                    ]['fightingWith'] = command[1]
-    #                             heroes[request['user']]['waiting'] = 1
-    #
-    #                             if heroes[command[1]]['waiting'] and heroes[command[1]]['fightingWith'] == request['user']:
-    #                                 heroes[command[1]]['waiting'] = 0
-    #                                 heroes[request['user']]['waiting'] = 0
-    #                                 if heroes[request['user']]['status']['spd'] > heroes[command[1]]['status']['spd']:
-    #                                     connectionSocket.send(pickle.dumps({
-    #                                         'user': request['user'],
-    #                                         'status code': 200,
-    #                                         'status': 'fighting',
-    #                                         'target': command[1]
-    #                                     }))
-    #                                 else:
-    #                                     heroes[command[1]]['connection'].send(pickle.dumps({
-    #                                         'user': command[1],
-    #                                         'status code': 200,
-    #                                         'status': 'fighting',
-    #                                         'target': request['user']
-    #                                     }))
-    #                     else:
-    #                         send_error(connectionSocket,
-    #                                    request['user'], 403, 'Enemy is offline')
-    #                 else:
-    #                     send_error(connectionSocket,
-    #                                request['user'], 404, 'Enemy is not found')
-    #             else:
-    #                 send_error(connectionSocket,
-    #                            request['user'], 403, 'Unknown command')
-    #         elif command[0] == 'atk':
-    #             if len(command) != 2:
-    #                 send_error(connectionSocket,
-    #                            request['user'], 403, 'command is incomplete')
-    #             elif heroes[heroes[request['user']]['fightingWith']]['fightingWith'] != request['user']:
-    #                 send_error(connectionSocket, request['user'], 400, 'Unable to attack this user')
-    #             else:
-    #                 hero = heroes[request['user']]
-    #                 if command[1] in hero['skills']:
-    #                     enemy = heroes[hero['fightingWith']]
-    #                     enemy['status']['hp'] -= hero['status']['atk'] * \
-    #                         hero['skills'][command[1]]
-    #                     if enemy['status']['hp'] < 0:
-    #                         enemy['status']['hp'] = 0
-    #                         enemy['connection'].send(pickle.dumps({
-    #                             'user': hero['fightingWith'],
-    #                             'status': 'death'
-    #                         }))
-    #                         connectionSocket.send(pickle.dumps({
-    #                             'user': request['user'],
-    #                             'status': hero['status'],
-    #                             'enemyStatus': 'death'
-    #                         }))
-    #                         del enemy
-    #                     else:
-    #                         enemy['connection'].send(pickle.dumps({
-    #                             'user': hero['fightingWith'],
-    #                             'status': enemy['status'],
-    #                             'enemy': request['user'],
-    #                             'enemyStatus': hero['status']
-    #                         }))
-    #                         connectionSocket.send(pickle.dumps({
-    #                             'user': request['user'],
-    #                             'status': hero['status'],
-    #                             'enemy': hero['fightingWith'],
-    #                             'enemyStatus': enemy['status']
-    #                         }))
-    #                 else:
-    #                     send_error(
-    #                         connectionSocket, request['user'], 404, 'This skill is not found')
-    #         elif command[0] == 'exit':
-    #             break
-    #         else:
-    #             send_error(connectionSocket,
-    #                        request['user'], 403, 'Unknown command')
-    # finally:
-    #     if (request['user'] in heroes):
-    #         print(heroes[request['user']])
-    #         heroes[request['user']]['connection'] = 0
-    #         heroes[request['user']]['fightingWith'] = '',
-    #         heroes[request['user']]['waiting'] = 0
-    #     connectionSocket.close()
 
 while 1:
     c, a = serverSocket.accept()
     thread._start_new_thread(run, (c, a))
-
-def send_error(client, user, code, msg):
-    client.send(pickle.dumps({
-        'user': user,
-        'status code': code,
-        'error': msg
-    }))
 
 
 
