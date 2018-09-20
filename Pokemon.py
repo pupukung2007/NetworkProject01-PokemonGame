@@ -24,7 +24,7 @@ class Pokemon:
         self.moves = [move1,move2,move3,move4]
 
     def gain_exp(self,exp):
-        message = "200 "+self.name+" has gained "+str(exp)+" Exp."
+        message = self.name+" has gained "+str(exp)+" Exp."
         pre_gained_level = self.level
         self.exp += exp
         while self.exp >= self.required_exp and self.level < MAX_LEVEL:
@@ -39,7 +39,8 @@ class Pokemon:
             self.exp -= self.required_exp
             self.required_exp = self.level*self.level*self.level
         if(self.level != pre_gained_level):
-            message+= "\n"+self.name+" has grown to level "+self.level
+            message+= "\n"+self.name+" has grown to level "+str(self.level)+"!\n"
+        return message
 
     def use_move(self,move_slot,other):
         move_slot -= 1

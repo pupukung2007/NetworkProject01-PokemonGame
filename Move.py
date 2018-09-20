@@ -32,7 +32,8 @@ class SpecialMove(Move):
             rival_pokemon.set_hp(rival_pokemon.hp - damage)
             self.pp -= 1
             if rival_pokemon.is_fainted():
-                message = "306 "+rival_pokemon.name+" has fainted"
+                message = "306 "+rival_pokemon.name+" has fainted\n"
+                message += user_pokemon.gain_exp(rival_pokemon.level * rival_pokemon.level * rival_pokemon.level)
             else:
                 message =  str(user_pokemon.name+" used "+self.name+" on "+rival_pokemon.name+" for "+str(damage)+" damage.")
         return message
@@ -49,7 +50,8 @@ class PhysicalMove(Move):
             rival_pokemon.set_hp(rival_pokemon.hp - damage)
             self.pp -= 1
             if rival_pokemon.is_fainted():
-                message = "306 "+rival_pokemon.name+" has fainted"
+                message = "306 "+rival_pokemon.name+" has fainted\n"
+                message += user_pokemon.gain_exp(rival_pokemon.level*rival_pokemon.level*rival_pokemon.level)
             else:
                 message =  str(user_pokemon.name+" used "+self.name+" on "+rival_pokemon.name+" for "+str(damage)+" damage.")
         return message

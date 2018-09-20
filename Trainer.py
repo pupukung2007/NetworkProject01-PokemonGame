@@ -42,14 +42,10 @@ class Trainer:
         return message
 
     def heal_pokemon(self):
-        if(self.money >= 100):
-            self.money -= 100
-            self.pokemon.hp = self.pokemon.max_hp
-            for i in range(4):
-                self.pokemon.moves[i].pp = self.pokemon.moves[i].max_pp
-            return "202 Your pokemon has been fully healed"
-        else:
-            return "404 Not enough money"
+        self.pokemon.hp = self.pokemon.max_hp
+        for i in range(4):
+            self.pokemon.moves[i].pp = self.pokemon.moves[i].max_pp
+
 
     def use_item(self,item):
         found = False

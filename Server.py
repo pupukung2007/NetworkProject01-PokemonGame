@@ -62,6 +62,7 @@ def run(connectionSocket, addr):
                                 if (command[2] == trainers[i].name):
                                     if trainers[i].is_online:
                                         response = "403 This user is already online"
+                                        user_found = True
                                         connectionSocket.send(response.encode())
                                     else:
                                         selected_trainer = trainers[i]
@@ -156,9 +157,29 @@ def run(connectionSocket, addr):
                             response = selected_trainer.pokemon.use_move_name(move_name,selected_trainer.enemy.pokemon)
                             if "403" in response or "404" in response:
                                 connectionSocket.send(response.encode())
-                            if "306" in response:
+                            elif "306" in response: #Battle Ends
+                                #Decide Winner and give rewards
+                                if selected_trainer.pokemon.hp == 0:
+                                    response += selected_trainer.enemy.name+" has won the battle and recieve 1000 poke"
+                                    selected_trainer.enemy.money+=1000
+                                else:
+                                    response += selected_trainer.name + " has won the battle and recieve 1000 poke"
+                                    selected_trainer.money += 1000
                                 connectionSocket.send(response.encode())
                                 selected_trainer.enemy.connectionSocket.send(response.encode())
+                                #Restore HP,PP and Enemy Status to default
+                                selected_trainer.heal_pokemon()
+                                selected_trainer.enemy.heal_pokemon()
+                                selected_trainer.enemy.enemy = NoTrainer("None")
+                                selected_trainer.enemy = NoTrainer("None")
+                                #Update Trainers
+                                for i in range(len(trainers)):
+                                    if trainers[i].name == selected_trainer.name:
+                                        trainers[i] = selected_trainer
+                                    elif trainers[i].name == selected_trainer.enemy.name:
+                                        trainers[i] = selected_trainer.enemy
+                                    else:
+                                        continue
                             else:
                                 connectionSocket.send(("202 "+response+"\n"+display_battle_info(selected_trainer,selected_trainer.enemy)).encode())
                                 selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
@@ -171,13 +192,8 @@ def run(connectionSocket, addr):
                     #
                     else:
                          connectionSocket.send("400 Unknown command".encode())
-
-
-
-
-                    
-            # elif command[0] == "refresh":
-            #     connectionSocket.send("900".encode())
+            elif command[0] == "Refresh":
+                 connectionSocket.send("900 ".encode())
             else:
                 response = "400 Unknown command"
                 connectionSocket.send(response.encode())
@@ -186,15 +202,7 @@ def run(connectionSocket, addr):
             if selected_trainer.name == trainers[i].name:
                 trainers[i].is_online = False
                 trainers[i].connectionSocket = 0
-                trainers[i].enemy = Trainer("None",
-                                   Pokemon("None", 0, 0, 0, 0, 0, 0, 0,
-                                           SpecialMove("None", 0, 0),
-                                           SpecialMove("None", 0, 0),
-                                           SpecialMove("None", 0, 0),
-                                           SpecialMove("None", 0, 0)
-                                           ),
-                                   0)
-
+                trainers[i].enemy = NoTrainer("None")
         selected_trainer = Trainer("None",
                                    Pokemon("None", 0, 0, 0, 0, 0, 0, 0,
                                            SpecialMove("None", 0, 0),
