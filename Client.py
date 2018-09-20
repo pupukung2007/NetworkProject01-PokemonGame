@@ -8,11 +8,15 @@ clientSocket = socket(AF_INET, SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 waiting = False
 in_battle = False
+exited = False
 while 1:
     while not in_battle:
         command = input("Enter your command: ")
         if command == '':
             command = "Refresh"
+        if command == "exit":
+            exited = True
+            break
         clientSocket.sendto(command.encode(), (serverName, serverPort))
         response = clientSocket.recv(2048).decode()
         response_list = response.split()
@@ -31,8 +35,11 @@ while 1:
         elif int(status_code) >= 400 and int(status_code) < 500:
             print(response)
             print("Please re enter your command")
+            print(">>>>", sep='')
         else:
             print(response)
+    if exited:
+        break
     if waiting:
         print("Waiting for another Trainer")
         response = clientSocket.recv(2048).decode()
@@ -45,9 +52,6 @@ while 1:
     if command == '':
         command = "Refresh"
     clientSocket.sendto(command.encode(), (serverName, serverPort))
-
-    if command == "exit":
-        break
 
     response = clientSocket.recv(2048).decode()
     response_list = response.split()
@@ -72,6 +76,7 @@ while 1:
     elif int(status_code) >= 400 and int(status_code) < 500:
         print(response)
         print("Please re enter your command")
+        print(">>>>",sep='')
     elif status_code == "900":
         print()
     else:

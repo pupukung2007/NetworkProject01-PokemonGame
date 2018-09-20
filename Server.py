@@ -186,8 +186,8 @@ def run(connectionSocket, addr):
                                     else:
                                         continue
                             else:
-                                connectionSocket.send((display_battle_info(selected_trainer,selected_trainer.enemy)+"202 "+response+"\n").encode())
-                                selected_trainer.enemy.connectionSocket.send((display_battle_info(selected_trainer.enemy,selected_trainer)+"200 "+response+"\n").encode())
+                                connectionSocket.send(("202 "+response+"\n"+display_battle_info(selected_trainer,selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
                         elif command[2].isnumeric(): #Use move (moveslot):
                             response = selected_trainer.pokemon.use_move(int(command[2]), selected_trainer.enemy.pokemon)
                             if "403" in response or "404" in response or "400" in response :
@@ -216,9 +216,8 @@ def run(connectionSocket, addr):
                                     else:
                                         continue
                             else:
-                                connectionSocket.send((display_battle_info(selected_trainer,selected_trainer.enemy)+"202 "+response+"\n").encode())
-                                selected_trainer.enemy.connectionSocket.send((display_battle_info(selected_trainer.enemy,selected_trainer)+"200 "+response+"\n").encode())
-
+                                connectionSocket.send(("202 "+response+"\n"+display_battle_info(selected_trainer,selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
                     #Use item
                     elif command[1] == "item":
                         if command[2].isalpha():  # Use item (itemname)
@@ -230,15 +229,15 @@ def run(connectionSocket, addr):
                             if "403" in response or "404" in response or "400" in response:
                                 connectionSocket.send(response.encode())
                             else:
-                                connectionSocket.send((display_battle_info(selected_trainer,selected_trainer.enemy)+"202 "+response+"\n").encode())
-                                selected_trainer.enemy.connectionSocket.send((display_battle_info(selected_trainer.enemy,selected_trainer)+"200 "+response+"\n").encode())
+                                connectionSocket.send(("202 "+response+"\n"+display_battle_info(selected_trainer,selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
                         elif command[2].isnumeric():  # Use item (itemslot):
                             response = selected_trainer.use_item(int(command[2]))
                             if "403" in response or "404" in response or "400" in response:
                                 connectionSocket.send(response.encode())
                             else:
-                                connectionSocket.send((display_battle_info(selected_trainer,selected_trainer.enemy)+"202 "+response+"\n").encode())
-                                selected_trainer.enemy.connectionSocket.send((display_battle_info(selected_trainer.enemy,selected_trainer)+"200 "+response+"\n").encode())
+                                connectionSocket.send(("202 "+response+"\n"+display_battle_info(selected_trainer,selected_trainer.enemy)).encode())
+                                selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
                     else:
                          connectionSocket.send("400 Unknown command".encode())
             elif command[0] == "Refresh":
