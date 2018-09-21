@@ -12,8 +12,8 @@ class Trainer:
         self.items = []
         self.is_online = False
         self.connectionSocket = 0
-        self.is_waiting = False
         self.enemy = NoTrainer("None")
+        self.got_challenged = False
 
     def buy_HP_item(self,item,buy_amount,price):
         total_price = buy_amount*price
@@ -92,8 +92,11 @@ class Trainer:
         if 0<=slot<len(self.items):
             if self.items[slot].amount_in_bag >0:
                 message = self.items[slot].use(self.pokemon)
-                self.items[slot].amount_in_bag -= 1
-                return self.name + " used " + self.items[slot].name + "\n" + message
+                if "403" in message:  # A stat is already Full
+                    return message
+                else:
+                    self.items[slot].amount_in_bag -= 1
+                    return self.name + " used " + self.items[slot].name + "\n" + message
             elif self.items[slot].amount_in_bag == 0:
                 return "403 Not enough " + self.items[slot].name + "s"
             else:

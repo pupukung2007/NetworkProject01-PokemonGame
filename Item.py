@@ -29,7 +29,7 @@ class HPHealItem(Item):
 
     def display_description(self):
         super().display_description()
-        return self.name + ": Heal your pokemon HP for "+str(self.power)+" points"+" Amount in bag: "+str(self.amount_in_bag)+"\n"
+        return self.name + ": Heal your pokemon HP for "+str(self.power)+" points"+" [Amount in bag: "+str(self.amount_in_bag)+"]\n"
 
 
 class PPHealItem(Item):
@@ -54,6 +54,6 @@ class PPHealItem(Item):
 
     def display_description(self):
         super().display_description()
-        return self.name + ": Heal all your pokemon move's PP for "+str(self.power)+" points"+" Amount in bag: "+str(self.amount_in_bag)+"\n"
+        return self.name + ": Heal all your pokemon move's PP for "+str(self.power)+" points"+" [Amount in bag: "+str(self.amount_in_bag)+"]\n"
 
 

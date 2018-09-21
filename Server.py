@@ -124,18 +124,43 @@ def run(connectionSocket, addr):
                                     user_found = True
                                     if trainers[i].is_online:
                                         if not trainers[i].is_in_battle():
-                                            selected_trainer.enemy = trainers[i]
-                                            # for j in range(len(trainers)):
-                                            #     if selected_trainer.name == trainers[j].name:
-                                            #         trainers[j].enemy = trainers[i]
-                                            trainers[i].enemy = selected_trainer
-                                            response = "300 You challenged Trainer " + command[
-                                                    1] + " to a Pokemon battle" + "\n"+display_battle_info(selected_trainer,selected_trainer.enemy)
-                                            connectionSocket.send(response.encode())
-
-                                            challenge_message = "301 You are challenged by Trainer " + selected_trainer.name + "\n"+display_battle_info(selected_trainer.enemy,selected_trainer)
-                                            trainers[i].connectionSocket.send(challenge_message.encode())
-
+                                            for j in range(len(trainers)):
+                                                if trainers[j].name == selected_trainer.name:
+                                                    if not trainers[j].got_challenged:
+                                                        response = "202 You challenged Trainer " + command[
+                                                            1] + " to a Pokemon battle" + "\n"
+                                                        trainers[i].got_challenged = True
+                                                        connectionSocket.send(response.encode())
+                                                        challenge_message = "200 You are challenged by Trainer " + selected_trainer.name + "\n"
+                                                        trainers[i].connectionSocket.send(challenge_message.encode())
+                                                    else: #Start Battle
+                                                        selected_trainer.enemy = trainers[i]
+                                                        trainers[j].enemy = trainers[i]
+                                                        trainers[i].enemy = selected_trainer
+                                                        trainers[i].got_challenged  = False
+                                                        trainers[j].got_challenged = False
+                                                        if trainers[i].pokemon.speed > trainers[j].pokemon.speed:
+                                                            first_player_message = "200 You are now battling " + trainers[j].name + "\n"+display_battle_info(trainers[i],trainers[j])
+                                                            trainers[i].connectionSocket.send(first_player_message.encode())
+                                                            second_player_message = "202 You are now battling " + \
+                                                                                   trainers[
+                                                                                       i].name + "\n" + display_battle_info(
+                                                                trainers[j], trainers[i])
+                                                            trainers[j].connectionSocket.send(
+                                                                second_player_message.encode())
+                                                        else:
+                                                            first_player_message = "200 You are now battling " + \
+                                                                                   trainers[
+                                                                                       i].name + "\n" + display_battle_info(
+                                                                trainers[j], trainers[i])
+                                                            trainers[j].connectionSocket.send(
+                                                                first_player_message.encode())
+                                                            second_player_message = "202 You are now battling " + \
+                                                                                    trainers[
+                                                                                        j].name + "\n" + display_battle_info(
+                                                                trainers[i], trainers[j])
+                                                            trainers[i].connectionSocket.send(
+                                                                second_player_message.encode())
                                         else:
                                             connectionSocket.send("403 This Trainer is currently in battle with another trainer".encode())
                                     else:
@@ -244,6 +269,9 @@ def run(connectionSocket, addr):
                 connectionSocket.send("900 ".encode())
             elif command[0] == "exit":
                 connectionSocket.send("600 ".encode())
+            elif command[0] == "reject":
+                for i in range(len(trainers)):
+                    trainers[i].got_challenged = False
             else:
                 response = "400 Unknown command"
                 connectionSocket.send(response.encode())
