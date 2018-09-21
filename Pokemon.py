@@ -45,7 +45,7 @@ class Pokemon:
     def use_move(self,move_slot,other):
         move_slot -= 1
         if(move_slot <0 or move_slot>3):
-            return "400 There is no move "+str(move_slot)
+            return "400 There is no move "+str(move_slot+1)
         else:
             if not self.is_fainted():
                 return self.moves[move_slot].use(self,other)
