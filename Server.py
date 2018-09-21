@@ -149,7 +149,7 @@ def run(connectionSocket, addr):
             
             elif command[0] == "challenge":
                 if selected_trainer.name == "None":
-                    response = "428 Please select your trainer before using this command"
+                    response = "401 Please select your trainer before using this command"
                     connectionSocket.send(response.encode())
                 elif selected_trainer.enemy.name != "None":
                     connectionSocket.send("403 You can't use this command while in a battle with another trainer".encode())
@@ -212,7 +212,7 @@ def run(connectionSocket, addr):
 
             elif command[0] == "use":
                 if selected_trainer.name == "None":
-                    response = "428 Please select your trainer before using this command"
+                    response = "401 Please select your trainer before using this command"
                     connectionSocket.send(response.encode())
                 elif selected_trainer.enemy.name == "None":
                     connectionSocket.send("403 You have to challenge another player before using this command".encode())
