@@ -24,19 +24,23 @@ while 1:
             print(data)
     # waiting for server response
     if waiting:
-        response = pickle.loads(clientSocket.recv(2048))
-        if response['status'] == 'death':
-            clientSocket.send(pickle.dumps({
-                'user': '',
-                'command':['exit']
-            }))
-            break
-        elif response['status'] == 'fighting':
-            print(response)
-        else:
-            print(response['user'],response['status'])
-            print(response['enemy'],response['enemyStatus'])
-        waiting = 0
+        clientSocket.settimeout(5)
+        try:
+            response = pickle.loads(clientSocket.recv(2048))
+            if response['status'] == 'death':
+                clientSocket.send(pickle.dumps({
+                    'user': '',
+                    'command':['exit']
+                }))
+                break
+            elif response['status'] == 'fighting':
+                print(response)
+            else:
+                print(response['user'],response['status'])
+                print(response['enemy'], response['enemyStatus'])
+            waiting = 0
+        except:
+            waiting = 0
         
     # get command
     command = input('{} :'.format(selectHero))
