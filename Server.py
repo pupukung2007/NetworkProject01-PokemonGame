@@ -80,7 +80,7 @@ def run(connectionSocket, addr):
                                 if (command[2] == trainers[i].name):
                                     user_found = True
                             if user_found:
-                                response = "403 This Trainer name is already exits, Please use another name"
+                                response = "403 This Trainer name is already exists, Please use another name"
                                 connectionSocket.send(response.encode())
                             else:
                                 randomnumber = randint(0,len(starters)-1)
