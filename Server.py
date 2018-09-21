@@ -50,9 +50,11 @@ def run(connectionSocket, addr):
             request = connectionSocket.recv(2048).decode()
             command = request.split()
             print(command)
-            if command[0] == "continue":
+            if command[0] == "exit":
+                connectionSocket.send("600 ".encode())
+            elif command[0] == "continue":
                 if(len(command)!=3):
-                    response = "400 Unknown command"
+                    response = "400 Incorrect 'continue' command parameters"
                     connectionSocket.send(response.encode())
                 elif selected_trainer.enemy.name != "None":
                     connectionSocket.send("403 You can't use this command while in a battle with another trainer".encode())
@@ -80,13 +82,13 @@ def run(connectionSocket, addr):
                                 response = "404 Trainer not found"
                                 connectionSocket.send(response.encode())
                     else:
-                        response = "400 Unknown command"
+                        response = "400 Incorrect 'continue' command parameters"
                         connectionSocket.send(response.encode())
 
 
             elif command[0] == "view" :
                 if(len(command)!=2):
-                    response = "400 Unknown command"
+                    response = "400 Incorrect 'view' command parameters"
                     connectionSocket.send(response.encode())
                 elif selected_trainer.enemy.name != "None":
                     connectionSocket.send("403 You can't use this command while in a battle with another trainer".encode())
@@ -102,7 +104,7 @@ def run(connectionSocket, addr):
                                     response += trainers[i].name + "\n"
                             connectionSocket.send(response.encode())
                     else:
-                        response = "400 Unknown command"
+                        response = "400 Incorrect 'continue' command parameters"
                         connectionSocket.send(response.encode())
             
             elif command[0] == "challenge":
@@ -113,7 +115,7 @@ def run(connectionSocket, addr):
                     connectionSocket.send("403 You can't use this command while in a battle with another trainer".encode())
                 else:
                     if (len(command) != 2):
-                        connectionSocket.send("400 Unknown command".encode())
+                        connectionSocket.send("400 Incorrect 'challenge' command parameters".encode())
                     else:
                         if (command[1] == selected_trainer.name):
                             connectionSocket.send("403 You can't challenge yourself".encode())
@@ -175,7 +177,7 @@ def run(connectionSocket, addr):
                 elif selected_trainer.enemy.name == "None":
                     connectionSocket.send("403 You have to challenge another player before using this command".encode())
                 elif len(command)<3:
-                    response = "400 Unknown command"
+                    response = "400 Not enough parameters for command 'use'"
                     connectionSocket.send(response.encode())
                 else:
                     if command[1] == "move":
@@ -265,13 +267,6 @@ def run(connectionSocket, addr):
                                 selected_trainer.enemy.connectionSocket.send(("200 "+response+"\n"+display_battle_info(selected_trainer.enemy,selected_trainer)).encode())
                     else:
                          connectionSocket.send("400 Unknown command".encode())
-            elif command[0] == "Refresh":
-                connectionSocket.send("900 ".encode())
-            elif command[0] == "exit":
-                connectionSocket.send("600 ".encode())
-            elif command[0] == "reject":
-                for i in range(len(trainers)):
-                    trainers[i].got_challenged = False
             else:
                 response = "400 Unknown command"
                 connectionSocket.send(response.encode())
