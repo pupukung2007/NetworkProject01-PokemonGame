@@ -1,3 +1,6 @@
+#จัดทำโดย
+#นาย ปิยณัฐ กันเดช 5910401092 หมู่เรียน 1
+#นาย ปุญญพัฒน์ ญาณวิสิฏฐ์ 5910401106 หมู่เรียน 1
 from abc import ABC,abstractmethod
 class Item(ABC):
     def __init__(self,name,power):
